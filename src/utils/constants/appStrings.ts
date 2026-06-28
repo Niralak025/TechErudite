@@ -1,0 +1,26 @@
+export const APP_STRINGS = {
+  login: {
+    title: 'TechErudite',
+    subtitle: 'Empowering minds, scaling horizons',
+    formTitle: 'Welcome Back',
+    formSubtitle: 'Sign in to your tech portal',
+    emailLabel: 'Email Address',
+    emailPlaceholder: 'name@company.com',
+    passwordLabel: 'Password',
+    passwordPlaceholder: '••••••••',
+    buttonText: 'Sign In',
+    forgotPasswordText: 'Forgot Password?',
+    footerText: "Don't have an account? ",
+    signUpText: 'Sign Up',
+  },
+  events: {
+    headerTitle: 'Tech Events',
+    headerSubtitle: 'Discover & Learn',
+    logoutText: 'Log Out',
+    searchPlaceholder: 'Search events, workshops...',
+    emptyText: 'No events found matching your filter',
+    attendingEmoji: '🔥',
+    attendingSuffix: 'Attending',
+    registerText: 'Register',
+  },
+};
