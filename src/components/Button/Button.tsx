@@ -10,7 +10,8 @@ import {
   TextStyle,
 } from 'react-native';
 import { COLORS } from '../../theme/colors';
-import { SPACING, BORDER_RADIUS } from '../../utils/constants/spacing';
+import { SPACING, BORDER_RADIUS, SIZES } from '../../utils/constants/spacing';
+import { FONT_STYLES } from '../../utils/Fonts';
 
 interface ButtonProps extends TouchableOpacityProps {
   title: string;
@@ -20,7 +21,7 @@ interface ButtonProps extends TouchableOpacityProps {
   textStyle?: StyleProp<TextStyle>;
 }
 
-export default function Button({
+const Button: React.FC<ButtonProps> = ({
   title,
   loading = false,
   variant = 'primary',
@@ -28,7 +29,7 @@ export default function Button({
   textStyle,
   disabled,
   ...props
-}: ButtonProps) {
+}): React.JSX.Element => {
   const getButtonStyles = () => {
     switch (variant) {
       case 'secondary':
@@ -69,7 +70,7 @@ export default function Button({
     >
       {loading ? (
         <ActivityIndicator
-          color={variant === 'outline' ? COLORS.primary : '#FFFFFF'}
+          color={variant === 'outline' ? COLORS.green : '#FFFFFF'}
           size="small"
         />
       ) : (
@@ -79,49 +80,45 @@ export default function Button({
       )}
     </TouchableOpacity>
   );
-}
+};
+
+export default Button;
 
 const styles = StyleSheet.create({
   baseButton: {
     borderRadius: BORDER_RADIUS.md,
-    paddingVertical: SPACING.md,
+    height: SIZES.btn_height,
+    paddingHorizontal: SPACING.xl,
     alignItems: 'center',
     justifyContent: 'center',
     flexDirection: 'row',
   },
   primaryButton: {
-    backgroundColor: COLORS.primary,
-    shadowColor: COLORS.primary,
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.3,
-    shadowRadius: 6,
-    elevation: 4,
+    backgroundColor: COLORS.green,
   },
   secondaryButton: {
-    backgroundColor: COLORS.surfaceLight,
+    backgroundColor: COLORS.green,
     borderWidth: 1,
-    borderColor: COLORS.border,
+    borderColor: COLORS.green,
   },
   outlineButton: {
     backgroundColor: 'transparent',
     borderWidth: 1,
-    borderColor: COLORS.primary,
+    borderColor: COLORS.green,
   },
   disabledButton: {
     opacity: 0.6,
   },
   baseText: {
-    fontSize: 16,
-    fontWeight: 'bold',
-    letterSpacing: 0.5,
+    ...FONT_STYLES.semibold_lg,
   },
   primaryText: {
-    color: COLORS.text,
+    color: COLORS.white,
   },
   secondaryText: {
-    color: COLORS.text,
+    color: COLORS.textDark,
   },
   outlineText: {
-    color: COLORS.primary,
+    color: COLORS.green,
   },
 });

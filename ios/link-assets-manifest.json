@@ -1,0 +1,21 @@
+{
+  "migIndex": 1,
+  "data": [
+    {
+      "path": "src/assets/fonts/GothicA1-Bold.ttf",
+      "sha1": "8b39e91c3fd6aac90bd2f1b55516f2a8b3befebf"
+    },
+    {
+      "path": "src/assets/fonts/GothicA1-Medium.ttf",
+      "sha1": "5171a85d3aa69d700484e8bbbb29d985d8efabc9"
+    },
+    {
+      "path": "src/assets/fonts/GothicA1-Regular.ttf",
+      "sha1": "e038087309cae26259a59a3a72aa09b27277e928"
+    },
+    {
+      "path": "src/assets/fonts/GothicA1-SemiBold.ttf",
+      "sha1": "b4afaa459270aa2633efab41f5385bacd0c28dcb"
+    }
+  ]
+}

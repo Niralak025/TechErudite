@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useCallback, useMemo } from 'react';
 import {
   StyleSheet,
   Text,
@@ -7,210 +7,325 @@ import {
   KeyboardAvoidingView,
   Platform,
   ScrollView,
-  StatusBar,
+  Image,
+  ImageSourcePropType,
+  ImageStyle,
+  StyleProp,
 } from 'react-native';
+import { Formik } from 'formik';
 import { useLoginViewModel } from './useLoginViewModel';
+import { loginValidationSchema } from '../../validation/loginValidation';
+import { appImages, EyeIcon, EyeOffIcon } from '../../assets';
+import { FONT_STYLES } from '../../utils/Fonts';
 import { COLORS } from '../../theme/colors';
-import { SPACING, BORDER_RADIUS } from '../../utils/constants/spacing';
 import { APP_STRINGS } from '../../utils/constants/appStrings';
-import { Button, Input } from '../../components';
+import { SPACING, BORDER_RADIUS, SIZES } from '../../utils/constants/spacing';
+import { AppSvgIcon, Input, Button, ScreenContainer } from '../../components';
+import { LoginFormValues } from '../../types/loginTypes';
+export interface SocialButtonProps {
+  source: ImageSourcePropType;
+  style?: StyleProp<ImageStyle>;
+  onPress?: () => void;
+}
+const SOCIAL_ICON_SIZE = SIZES.icon_lg * 2;
+const FACEBOOK_ICON_SIZE = SIZES.icon_lg * 1.7;
 
-export default function LoginScreen() {
+const LoginScreen: React.FC = (): React.JSX.Element => {
   const {
-    email,
-    password,
-    emailError,
-    passwordError,
     isLoading,
-    onEmailChange,
-    onPasswordChange,
-    login,
+    authError,
+    handleLogin,
+    togglePasswordVisibility,
+    isPasswordVisible,
   } = useLoginViewModel();
 
-  const strings = APP_STRINGS.login;
+  const passwordIcon = useMemo(
+    () => (
+      <TouchableOpacity
+        onPress={togglePasswordVisibility}
+        style={styles.eyeIconContainer}
+      >
+        <AppSvgIcon
+          icon={isPasswordVisible ? EyeIcon : EyeOffIcon}
+          size={SIZES.icon_md}
+          color={COLORS.placeholder}
+        />
+      </TouchableOpacity>
+    ),
+    [isPasswordVisible, togglePasswordVisibility],
+  );
+
+  const SocialButton = React.memo(
+    ({ source, style, onPress }: SocialButtonProps) => (
+      <TouchableOpacity style={styles.socialBtn} onPress={onPress}>
+        <Image
+          source={source}
+          style={[styles.socialIcon, style]}
+          resizeMode="contain"
+        />
+      </TouchableOpacity>
+    ),
+  );
+
+  const initialValues = useMemo(
+    () => ({
+      email: '',
+      password: '',
+    }),
+    [],
+  );
+
+  const onSubmit = useCallback(
+    (values: LoginFormValues) => {
+      handleLogin(values);
+    },
+    [handleLogin],
+  );
 
   return (
-    <KeyboardAvoidingView
-      style={styles.container}
-      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-    >
-      <StatusBar barStyle="light-content" backgroundColor={COLORS.background} />
-      <ScrollView
-        contentContainerStyle={styles.scrollContent}
-        keyboardShouldPersistTaps="handled"
+    <ScreenContainer requiredSafeArea style={styles.container}>
+      <KeyboardAvoidingView
+        style={styles.bottomHalf}
+        behavior={Platform.OS === 'ios' ? 'padding' : undefined}
       >
-        <View style={styles.headerContainer}>
-          <View style={styles.logoContainer}>
-            <Text style={styles.logoText}>TE</Text>
+        <ScrollView
+          showsVerticalScrollIndicator={false}
+          keyboardShouldPersistTaps="handled"
+        >
+          {/* Top Half */}
+          <View style={styles.topHalf}>
+            <Text style={styles.logoText}>{APP_STRINGS.login.logo}</Text>
+            <View style={styles.imagePlaceholder}>
+              <Image source={appImages.appLogo} style={styles.imageStyle} />
+            </View>
           </View>
-          <Text style={styles.title}>{strings.title}</Text>
-          <Text style={styles.subtitle}>{strings.subtitle}</Text>
-        </View>
+          <View style={styles.formContainer}>
+            <Formik
+              initialValues={initialValues}
+              validationSchema={loginValidationSchema}
+              onSubmit={onSubmit}
+            >
+              {({
+                handleChange,
+                handleBlur,
+                handleSubmit,
+                values,
+                errors,
+                touched,
+              }) => (
+                <>
+                  {/* Email Input */}
+                  <Input
+                    label={APP_STRINGS.login.emailLabel}
+                    placeholder={APP_STRINGS.login.emailPlaceholder}
+                    value={values.email}
+                    onChangeText={handleChange('email')}
+                    onBlur={handleBlur('email')}
+                    keyboardType="email-address"
+                    autoCapitalize="none"
+                    error={touched.email && errors.email}
+                  />
 
-        <View style={styles.formContainer}>
-          <Text style={styles.formTitle}>{strings.formTitle}</Text>
-          <Text style={styles.formSubtitle}>{strings.formSubtitle}</Text>
+                  {/* Password Input */}
+                  <Input
+                    label={APP_STRINGS.login.passwordLabel}
+                    placeholder={APP_STRINGS.login.passwordPlaceholder}
+                    value={values.password}
+                    onChangeText={handleChange('password')}
+                    onBlur={handleBlur('password')}
+                    secureTextEntry={!isPasswordVisible}
+                    autoCapitalize="none"
+                    error={touched.password && errors.password}
+                    rightIcon={passwordIcon}
+                  />
+                  {!!authError && (
+                    <Text style={styles.errorText}>{authError}</Text>
+                  )}
 
-          {/* Email Field */}
-          <Input
-            label={strings.emailLabel}
-            placeholder={strings.emailPlaceholder}
-            value={email}
-            onChangeText={onEmailChange}
-            error={emailError}
-            keyboardType="email-address"
-            autoCapitalize="none"
-            autoCorrect={false}
-          />
+                  <View style={styles.forgotPasswordContainer}>
+                    <Text style={styles.forgotPasswordText}>
+                      {APP_STRINGS.login.forgotPasswordText}
+                    </Text>
+                  </View>
 
-          {/* Password Field */}
-          <Input
-            label={strings.passwordLabel}
-            placeholder={strings.passwordPlaceholder}
-            value={password}
-            onChangeText={onPasswordChange}
-            error={passwordError}
-            secureTextEntry
-            autoCapitalize="none"
-            autoCorrect={false}
-          />
+                  {/* Sign In Button */}
+                  <View style={styles.signInButtonContainer}>
+                    <Button
+                      title={APP_STRINGS.login.buttonText}
+                      onPress={handleSubmit}
+                      loading={isLoading}
+                      style={styles.signInButton}
+                    />
+                  </View>
+                </>
+              )}
+            </Formik>
 
-          {/* Submit Button */}
-          <Button
-            title={strings.buttonText}
-            onPress={login}
-            loading={isLoading}
-            style={styles.button}
-          />
+            {/* Sign Up Link */}
+            <View style={styles.signUpContainer}>
+              <Text style={styles.notAMemberText}>
+                {APP_STRINGS.login.footerText}
+              </Text>
+              <TouchableOpacity>
+                <Text style={styles.signUpText}>
+                  {APP_STRINGS.login.signUpText}
+                </Text>
+              </TouchableOpacity>
+            </View>
 
-          {/* Alternative Actions */}
-          <View style={styles.footerActions}>
+            <View style={styles.dividerContainer}>
+              <View style={styles.line} />
+              <Text style={styles.orText}>{APP_STRINGS.login.orText}</Text>
+              <View style={styles.line} />
+            </View>
+            {/* Social Logins */}
+            <View style={styles.socialContainer}>
+              <SocialButton source={appImages.googleLogo} />
+              <SocialButton source={appImages.appleLogo} />
+              <SocialButton
+                source={appImages.facebookLogo}
+                style={styles.facebookLogo}
+              />
+            </View>
+          </View>
+          {/* Enter as Guest */}
+          <View style={styles.guestContainer}>
             <TouchableOpacity>
-              <Text style={styles.forgotPasswordText}>{strings.forgotPasswordText}</Text>
+              <Text style={styles.guestText}>
+                {APP_STRINGS.login.guestText}
+              </Text>
             </TouchableOpacity>
           </View>
-        </View>
-
-        <View style={styles.footerContainer}>
-          <Text style={styles.footerText}>{strings.footerText}</Text>
-          <TouchableOpacity>
-            <Text style={styles.signUpText}>{strings.signUpText}</Text>
-          </TouchableOpacity>
-        </View>
-      </ScrollView>
-    </KeyboardAvoidingView>
+        </ScrollView>
+      </KeyboardAvoidingView>
+    </ScreenContainer>
   );
-}
+};
+
+export default LoginScreen;
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: COLORS.background,
+    backgroundColor: COLORS.backgroundGray,
   },
-  scrollContent: {
-    flexGrow: 1,
-    paddingHorizontal: SPACING.lg,
-    paddingTop: SPACING.xxl,
-    paddingBottom: SPACING.xl,
-    justifyContent: 'space-between',
+  imageStyle: {
+    height: SIZES.btn_height,
+    width: SIZES.btn_height,
   },
-  headerContainer: {
+  topHalf: {
+    height: '40%',
+    backgroundColor: COLORS.backgroundGray,
     alignItems: 'center',
-    marginTop: SPACING.md,
-  },
-  logoContainer: {
-    width: 64,
-    height: 64,
-    borderRadius: BORDER_RADIUS.lg,
-    backgroundColor: COLORS.primary,
-    alignItems: 'center',
-    justifyContent: 'center',
-    shadowColor: COLORS.primary,
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.3,
-    shadowRadius: 10,
-    elevation: 8,
-    marginBottom: SPACING.md,
+    paddingTop: SPACING.huge + 20,
   },
   logoText: {
-    color: COLORS.text,
-    fontSize: 28,
-    fontWeight: '900',
-    letterSpacing: 1.5,
+    ...FONT_STYLES.bold_hero,
+    fontSize: SIZES.btn_height + SPACING.md,
+    color: COLORS.black,
+    letterSpacing: SPACING.xxs,
   },
-  title: {
-    color: COLORS.text,
-    fontSize: 32,
-    fontWeight: 'bold',
-    letterSpacing: 0.5,
+  imagePlaceholder: {
+    marginTop: SPACING.xxxxl,
   },
-  subtitle: {
-    color: COLORS.textMuted,
-    fontSize: 14,
-    marginTop: SPACING.xs,
-    textAlign: 'center',
+  imagePlaceholderText: {
+    fontSize: SIZES.btn_height + SPACING.xxs,
+    color: COLORS.darkGray,
+  },
+  bottomHalf: {
+    flex: 1,
+    backgroundColor: COLORS.white,
+    borderTopLeftRadius: BORDER_RADIUS.xl,
+    borderTopRightRadius: BORDER_RADIUS.xl,
+    marginTop: SPACING.neg_lg,
   },
   formContainer: {
-    backgroundColor: COLORS.surface,
-    padding: SPACING.lg,
-    borderRadius: BORDER_RADIUS.xl,
-    borderWidth: 1,
-    borderColor: COLORS.border,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 10 },
-    shadowOpacity: 0.2,
-    shadowRadius: 15,
-    elevation: 5,
-    marginTop: SPACING.xl,
-    marginBottom: SPACING.xl,
+    paddingHorizontal: SPACING.md,
+    paddingTop: SPACING.md,
   },
-  formTitle: {
-    color: COLORS.text,
-    fontSize: 20,
-    fontWeight: 'bold',
-  },
-  formSubtitle: {
-    color: COLORS.textMuted,
-    fontSize: 14,
+  errorText: {
+    ...FONT_STYLES.regular_xs,
+    color: COLORS.error,
     marginTop: SPACING.xs,
-    marginBottom: SPACING.lg,
+    marginBottom: SPACING.sm,
   },
-  button: {
-    backgroundColor: COLORS.primary,
-    borderRadius: BORDER_RADIUS.md,
-    paddingVertical: SPACING.md,
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginTop: SPACING.md,
-    shadowColor: COLORS.primary,
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.3,
-    shadowRadius: 6,
-    elevation: 4,
+  eyeIconContainer: {
+    padding: SPACING.xs,
   },
-  footerActions: {
-    alignItems: 'center',
-    marginTop: SPACING.md,
+  forgotPasswordContainer: {
+    alignItems: 'flex-end',
+    marginBottom: SPACING.xxl,
   },
   forgotPasswordText: {
-    color: COLORS.secondary,
-    fontSize: 14,
-    fontWeight: '500',
+    ...FONT_STYLES.regular_sm,
+    color: COLORS.textLightGray,
   },
-  footerContainer: {
+  signInButtonContainer: {
+    alignItems: 'flex-end',
+    marginBottom: SPACING.lg,
+  },
+  signInButton: {
+    paddingHorizontal: SPACING.xxxl,
+    borderRadius: BORDER_RADIUS.sm,
+  },
+  signUpContainer: {
     flexDirection: 'row',
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginBottom: SPACING.md,
+    justifyContent: 'flex-end',
+    marginBottom: SPACING.xxxxl,
   },
-  footerText: {
-    color: COLORS.textMuted,
-    fontSize: 14,
+  notAMemberText: {
+    ...FONT_STYLES.regular_sm,
+    color: COLORS.black,
   },
   signUpText: {
-    color: COLORS.primaryLight,
-    fontSize: 14,
-    fontWeight: 'bold',
+    ...FONT_STYLES.regular_sm,
+    color: COLORS.black,
+    textDecorationLine: 'underline',
+  },
+  dividerContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: SPACING.xxxl - SPACING.xxs,
+  },
+  line: {
+    flex: 1,
+    height: SIZES.border_width,
+    backgroundColor: COLORS.black,
+  },
+  orText: {
+    marginHorizontal: SPACING.sm_md,
+    ...FONT_STYLES.regular_sm,
+    color: COLORS.black,
+  },
+  socialContainer: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    marginBottom: SPACING.xxxxl,
+  },
+  socialBtn: {
+    borderRadius: BORDER_RADIUS.sm,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginHorizontal: SPACING.md,
+    shadowColor: COLORS.black,
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 3,
+  },
+  socialIcon: {
+    width: SOCIAL_ICON_SIZE,
+    height: SOCIAL_ICON_SIZE,
+  },
+  guestContainer: {
+    alignItems: 'flex-end',
+  },
+  guestText: {
+    ...FONT_STYLES.regular_sm,
+    color: COLORS.textLightGray,
+  },
+  facebookLogo: {
+    width: FACEBOOK_ICON_SIZE,
+    height: FACEBOOK_ICON_SIZE,
   },
 });
-

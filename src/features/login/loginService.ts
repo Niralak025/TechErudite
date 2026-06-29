@@ -11,11 +11,14 @@ export const loginApiCall = async (email: string, password: string): Promise<Log
     });
 
     if (response.status === 200 || response.status === 201) {
-      const token = response.data?.token || response.data?.data?.token || response.data?.data?.access_token;
-      return {
-        success: true,
-        token: token || 'jwt-token-from-axios-' + Math.random().toString(36).substring(7),
-      };
+      if (response.data?.success) {
+        return {
+          success: true,
+          message: response.data.message,
+          data: response.data.data,
+          token: response.data.data?.token,
+        };
+      }
     }
 
     return {

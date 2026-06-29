@@ -2,9 +2,10 @@ import React from 'react';
 import { StyleSheet, View, ActivityIndicator } from 'react-native';
 import { useAppSelector } from '../../redux/store';
 import { COLORS } from '../../theme/colors';
+import { BORDER_RADIUS, SPACING } from '../../utils/constants/spacing';
 
-export default function Loader() {
-  const globalLoading = useAppSelector((state) => state.ui.globalLoading);
+const Loader: React.FC = (): React.JSX.Element | null => {
+  const globalLoading = useAppSelector(state => state.ui.globalLoading);
 
   if (!globalLoading) {
     return null;
@@ -13,34 +14,32 @@ export default function Loader() {
   return (
     <View style={styles.overlay}>
       <View style={styles.spinnerContainer}>
-        <ActivityIndicator size="large" color={COLORS.secondary} />
+        <ActivityIndicator size="large" color={COLORS.green} />
       </View>
     </View>
   );
-}
+};
+
+export default Loader;
 
 const styles = StyleSheet.create({
   overlay: {
-    position: 'absolute',
-    left: 0,
-    right: 0,
-    top: 0,
-    bottom: 0,
-    backgroundColor: 'rgba(11, 13, 23, 0.75)',
+    ...StyleSheet.absoluteFill,
+    backgroundColor: COLORS.overlay,
     justifyContent: 'center',
     alignItems: 'center',
-    zIndex: 99999,
+    zIndex: 999,
   },
   spinnerContainer: {
-    padding: 24,
-    borderRadius: 16,
-    backgroundColor: 'rgba(21, 25, 44, 0.9)',
+    padding: SPACING.xl,
+    borderRadius: BORDER_RADIUS.lg,
+    backgroundColor: COLORS.white,
     borderWidth: 1,
-    borderColor: 'rgba(42, 51, 83, 0.5)',
-    shadowColor: COLORS.secondary,
+    borderColor: COLORS.borderLight,
+    shadowColor: COLORS.black,
     shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.15,
+    shadowOpacity: 0.1,
     shadowRadius: 12,
-    elevation: 8,
+    elevation: 5,
   },
 });
