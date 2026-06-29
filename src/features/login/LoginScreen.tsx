@@ -27,8 +27,7 @@ export interface SocialButtonProps {
   style?: StyleProp<ImageStyle>;
   onPress?: () => void;
 }
-const SOCIAL_ICON_SIZE = SIZES.icon_lg * 2;
-const FACEBOOK_ICON_SIZE = SIZES.icon_lg * 1.7;
+const SOCIAL_ICON_SIZE = SIZES.icon_lg * 1.2;
 
 const LoginScreen: React.FC = (): React.JSX.Element => {
   const {
@@ -61,7 +60,7 @@ const LoginScreen: React.FC = (): React.JSX.Element => {
         <Image
           source={source}
           style={[styles.socialIcon, style]}
-          resizeMode="contain"
+          resizeMode="cover"
         />
       </TouchableOpacity>
     ),
@@ -182,10 +181,7 @@ const LoginScreen: React.FC = (): React.JSX.Element => {
             <View style={styles.socialContainer}>
               <SocialButton source={appImages.googleLogo} />
               <SocialButton source={appImages.appleLogo} />
-              <SocialButton
-                source={appImages.facebookLogo}
-                style={styles.facebookLogo}
-              />
+              <SocialButton source={appImages.facebookLogo} />
             </View>
           </View>
           {/* Enter as Guest */}
@@ -303,7 +299,6 @@ const styles = StyleSheet.create({
     marginBottom: SPACING.xxxxl,
   },
   socialBtn: {
-    borderRadius: BORDER_RADIUS.sm,
     justifyContent: 'center',
     alignItems: 'center',
     marginHorizontal: SPACING.md,
@@ -319,13 +314,10 @@ const styles = StyleSheet.create({
   },
   guestContainer: {
     alignItems: 'flex-end',
+    marginRight: SPACING.md,
   },
   guestText: {
     ...FONT_STYLES.regular_sm,
     color: COLORS.textLightGray,
-  },
-  facebookLogo: {
-    width: FACEBOOK_ICON_SIZE,
-    height: FACEBOOK_ICON_SIZE,
   },
 });

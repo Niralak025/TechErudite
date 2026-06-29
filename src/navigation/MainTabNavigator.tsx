@@ -1,5 +1,8 @@
 import React from 'react';
-import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+import {
+  BottomTabBarButtonProps,
+  createBottomTabNavigator,
+} from '@react-navigation/bottom-tabs';
 import { MainTabParamList } from '../types/navigation';
 import SearchScreen from '../features/search/SearchScreen';
 import EventsScreen from '../features/events/EventsScreen';
@@ -15,6 +18,7 @@ import { AppSvgIcon } from '../components';
 import { SPACING, SIZES, BORDER_RADIUS } from '../utils/constants/spacing';
 import { COLORS } from '../theme/colors';
 import { APP_STRINGS } from '../utils/constants/appStrings';
+import { Pressable } from 'react-native';
 
 const Tab = createBottomTabNavigator<MainTabParamList>();
 
@@ -41,6 +45,18 @@ const MainTabNavigator: React.FC = (): React.JSX.Element => {
           fontSize: 12,
           fontWeight: '500',
         },
+        tabBarButton: ({ ref, ...props }: BottomTabBarButtonProps) => (
+          <Pressable
+            {...props}
+            android_ripple={{ color: 'transparent' }}
+            style={({ pressed }) => [
+              props.style,
+              {
+                opacity: 1,
+              },
+            ]}
+          />
+        ),
       }}
     >
       <Tab.Screen
@@ -59,7 +75,11 @@ const MainTabNavigator: React.FC = (): React.JSX.Element => {
         options={{
           tabBarLabel: APP_STRINGS.tabs.events,
           tabBarIcon: ({ color }) => (
-            <AppSvgIcon icon={CalendarIcon} size={SIZES.icon_lg} color={color} />
+            <AppSvgIcon
+              icon={CalendarIcon}
+              size={SIZES.icon_lg}
+              color={color}
+            />
           ),
         }}
       />
@@ -69,7 +89,11 @@ const MainTabNavigator: React.FC = (): React.JSX.Element => {
         options={{
           tabBarLabel: APP_STRINGS.tabs.favourites,
           tabBarIcon: ({ color }) => (
-            <AppSvgIcon icon={HeartOutlineIcon} size={SIZES.icon_lg} color={color} />
+            <AppSvgIcon
+              icon={HeartOutlineIcon}
+              size={SIZES.icon_lg}
+              color={color}
+            />
           ),
         }}
       />
@@ -78,7 +102,9 @@ const MainTabNavigator: React.FC = (): React.JSX.Element => {
         component={ProfileScreen}
         options={{
           tabBarLabel: APP_STRINGS.tabs.profile,
-          tabBarIcon: ({ color }) => <AppSvgIcon icon={UserIcon} size={SIZES.icon_lg} color={color} />,
+          tabBarIcon: ({ color }) => (
+            <AppSvgIcon icon={UserIcon} size={SIZES.icon_lg} color={color} />
+          ),
         }}
       />
     </Tab.Navigator>

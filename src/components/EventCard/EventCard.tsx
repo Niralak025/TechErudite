@@ -5,6 +5,7 @@ import {
   ShareIcon,
   HeartOutlineIcon,
   FilledHeartIcon,
+  appImages,
 } from '../../assets';
 import { COLORS } from '../../theme/colors';
 import { EventItem } from '../../types/eventsTypes';
@@ -22,9 +23,7 @@ const EventCard: React.FC<EventCardProps> = ({
   isFavourite,
   onToggleFavourite,
 }): React.JSX.Element => {
-  const imageSource = item.image
-    ? { uri: item.image }
-    : require('../../assets/png/facebook.png');
+  const imageSource = item.image ? { uri: item.image } : appImages.facebookLogo;
 
   const priceText =
     item.priceFrom === 0 && item.priceTo === 0

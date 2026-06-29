@@ -9,8 +9,8 @@ export { default as EyeIcon } from './svg/Eye.svg';
 export { default as EyeOffIcon } from './svg/eye-off.svg';
 
 export const appImages = {
-  appLogo: require('./png/logo.png'),
-  facebookLogo: require('./png/facebook.png'),
-  googleLogo: require('./png/google.png'),
-  appleLogo: require('./png/apple.png'),
+  appLogo: require('./png/image.png'),
+  facebookLogo: require('./png/facebook_1.png'),
+  googleLogo: require('./png/search.png'),
+  appleLogo: require('./png/apple-logo.png'),
 };
